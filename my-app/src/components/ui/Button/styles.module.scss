@@ -1,0 +1,57 @@
+@use 'styles/mixins' as *;
+
+.buttonRoot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: rem(12);
+
+  color: #343a40;
+
+  border-radius: rem(6);
+
+  background-color: #dfe2e4;
+
+  cursor: pointer;
+
+  transition: background 0.2s linear;
+
+  &:hover {
+    color: #b7b9bc;
+
+    background-color: #eceeef;
+  }
+
+  &:disabled {
+    color: #cbccce;
+
+    background-color: #f1f2f3;
+
+    pointer-events: none;
+  }
+
+  &.loading {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+
+    color: #cfd1d4;
+  }
+}
+
+.transparent {
+  border: none;
+
+  background-color: transparent !important;
+
+  &:hover {
+    background-color: transparent !important;
+  }
+}
+
+.rounded {
+  padding: rem(6) rem(10);
+
+  border-radius: rem(20);
+}

@@ -1,0 +1,115 @@
+@use 'styles/mixins' as *;
+
+.multiDropdownRoot {
+  position: relative;
+
+  font-family: inherit;
+}
+
+.selectButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+  max-width: rem(225);
+  max-height: rem(24);
+  padding: rem(10) rem(16);
+
+  color: #343a40;
+  font-size: rem(12);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+
+  background: white;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  }
+
+  &:disabled {
+    color: #6c757d;
+
+    border: 0.5px solid #dfe2e4;
+
+    pointer-events: none;
+  }
+}
+
+.selectButtonSelected {
+  color: #343a40;
+
+  border: 1px solid #343a40;
+}
+
+.selected {
+  color: #111827;
+  font-weight: 500;
+
+  background-color: #dfe2e4;
+}
+
+.arrow {
+  width: 0;
+  height: 0;
+  margin-left: 8px;
+
+  border-top: 5px solid #6c757d;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+}
+
+.dropdownList {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1000;
+
+  width: max-content;
+  max-width: rem(225);
+
+  border: 1px solid #dfe2e4;
+  border-radius: rem(12);
+
+  background: white;
+
+  box-shadow: 0 rem(6) rem(20) rgb(0 0 0 / 15%);
+}
+
+.dropdownItem {
+  height: 100px;
+  max-height: rem(24);
+  padding: rem(8) rem(16);
+
+  color: #111827;
+  font-size: rem(12);
+
+  border-bottom: 1px solid #dfe2e4;
+
+  cursor: pointer;
+
+  &:first-child {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
