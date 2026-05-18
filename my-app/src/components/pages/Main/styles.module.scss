@@ -3,38 +3,30 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: rem(30);
+  gap: rem(16);
+  align-items: center;
 
-  max-width: rem(1130);
-  width: 100%;
+  width: fit-content;
+  margin: 0 auto;
+  padding: rem(16);
 }
-
-.box {
-  display: flex;
-  flex-direction: column;
-  gap: rem(60) 0;
-
-  .dropdown {
-    flex-wrap: wrap;
-    gap: 0;
-  
-    .item {
-      width: 30%;
-    }
-  }
-}
-
-
 
 .items {
   display: flex;
-  gap: 0 rem(60);
+  flex-direction: column;
+  gap: rem(8);
+  align-items: center;
+
+  width: 100%;
 }
 
-.item {
+.link {
+  width: 100%;
+}
+
+.toolbar {
   display: flex;
-  flex-direction: column;
-  gap: rem(20);
-  align-items: baseline;
-  margin-bottom: rem(40);
+  gap: rem(16);
+
+  width: 100%;
 }
