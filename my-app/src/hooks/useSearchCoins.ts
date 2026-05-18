@@ -1,53 +1,52 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { currencySymbols } from 'contexts/CurrencyContext'
 import { useState } from 'react'
+import { useCoinList } from './useCoinList'
 
 const API_KEY = 'CG-te6ri6tZ1fivzczvJ2UqC4Wb'
 const BASE_URL = 'https://api.coingecko.com/api/v3'
-const headers = {
-  'x-cg-demo-api-key': API_KEY
-}
+const headers = { 'x-cg-demo-api-key': API_KEY }
 
-export const useSearchCoins = () => {
+export const useSearchCoins = (currency: string = 'usd') => {
+  const { data: coinList, isLoading: isListLoading, error: listError } = useCoinList()
   const [filteredCoins, setFilteredCoins] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const search = async (query: string) => {
-    if (!query.trim()) {
+    if (!coinList || !query.trim()) {
       setFilteredCoins([])
       return
     }
 
-    setIsLoading(true)
-    setError(null)
+    const lowerQuery = query.toLowerCase()
+    const matched = coinList
+      .filter(
+        (coin: any) =>
+          coin.id.includes(lowerQuery) ||
+          coin.name.toLowerCase().includes(lowerQuery) ||
+          coin.symbol.toLowerCase().includes(lowerQuery)
+      )
+      .slice(0, 10)
+
+    if (matched.length === 0) {
+      setFilteredCoins([])
+      return
+    }
+
+    const ids = matched.map((c: any) => c.id).join(',')
 
     try {
-      // 1. Поиск монет по имени
-      const searchResponse = await fetch(`${BASE_URL}/search?query=${encodeURIComponent(query)}`, {
+      setIsLoading(true)
+      setError(null)
+      const res = await fetch(`${BASE_URL}/coins/markets?vs_currency=${currency}&ids=${ids}`, {
         headers
       })
-      if (!searchResponse.ok) throw new Error('Failed to fetch search results')
-      const searchData = await searchResponse.json()
+      if (!res.ok) throw new Error('Market data fetch failed')
+      const marketData = await res.json()
 
-      const coinIds = searchData.coins.map((coin: any) => coin.id).join(',')
-
-      if (!coinIds) {
-        setFilteredCoins([])
-        setIsLoading(false)
-        return
-      }
-
-      // 2. Получение рыночных данных для найденных монет
-      const marketResponse = await fetch(
-        `${BASE_URL}/coins/markets?vs_currency=usd&ids=${coinIds}`,
-        { headers }
-      )
-      if (!marketResponse.ok) throw new Error('Failed to fetch market data')
-      const marketData = await marketResponse.json()
-
-      // 3. Подготовка данных для UI (можно расширить по аналогии с useCurrencies)
       const combined = marketData.map((coin: any) => ({
-        currency: '$',
+        currency: currencySymbols[currency as keyof typeof currencySymbols] || '',
         percentage: Math.abs(coin.price_change_percentage_24h).toFixed(2),
         value: coin.current_price.toLocaleString(),
         growth: coin.price_change_percentage_24h >= 0 ? 'positive' : 'negative',
@@ -59,11 +58,16 @@ export const useSearchCoins = () => {
 
       setFilteredCoins(combined)
     } catch (e: any) {
-      setError(e.message || 'Error fetching coins')
+      setError(e.message || 'Search failed')
     } finally {
       setIsLoading(false)
     }
   }
 
-  return { filteredCoins, isLoading, error, search }
+  return {
+    filteredCoins,
+    isLoading: isLoading || isListLoading,
+    error: error || listError,
+    search
+  }
 }

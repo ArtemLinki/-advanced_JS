@@ -24,9 +24,16 @@
   width: 100%;
 }
 
-.toolbar {
+.searchBar {
   display: flex;
   gap: rem(16);
+
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
 
   width: 100%;
 }

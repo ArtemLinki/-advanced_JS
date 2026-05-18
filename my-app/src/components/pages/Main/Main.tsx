@@ -1,142 +1,124 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Icons } from 'constants/icons'
 import { Link } from '@tanstack/react-router'
-import AdaIcon from 'assets/icons/ada.png'
-import BandIcon from 'assets/icons/band.png'
-import BtcIcon from 'assets/icons/btc.png'
-import DogeIcon from 'assets/icons/doge.png'
-import EthIcon from 'assets/icons/eth.png'
-import TrxIcon from 'assets/icons/trx.png'
-import UsdtIcon from 'assets/icons/usdt.png'
 import CurrencyCard from 'components/custom/CurrencyCard'
-import { GrowthType } from 'components/custom/CurrencyCard/Currency'
 import MainLayout from 'components/layouts/MainLayout'
-import Button from 'components/ui/Button'
+import Dropdown from 'components/ui/Dropdown'
+import IconButton from 'components/ui/IconButton'
 import Input from 'components/ui/Input'
-import { useState } from 'react'
+import Loader from 'components/ui/Loader'
+import Typography from 'components/ui/Typography'
+import Container from 'components/wrappers/Container'
+import { useCurrencyContext } from 'contexts/CurrencyContext'
+import { useState, Key } from 'react'
+import { useCurrencies } from 'hooks/useCurrencies'
+import { useSearchCoins } from 'hooks/useSearchCoins'
 import styles from './styles.module.scss'
 
-const prevValues = [
-  { value: '2509.75' },
-  { value: '2495.74' },
-  { value: '2519.75' },
-  { value: '1696.75' },
-  { value: '2114.75' }
-]
-
-const currencies = [
-  {
-    currency: '₹',
-    percentage: '9.77',
-    value: '2,509.75',
-    growth: 'positive',
-    image: BtcIcon,
-    title: 'Bitcoin',
-    subtitle: 'BTC',
-    prevValues
-  },
-  {
-    currency: '₹',
-    percentage: '21.00',
-    value: '2,509.75',
-    growth: 'negative',
-    image: EthIcon,
-    title: 'Etherium',
-    subtitle: 'ETH',
-    prevValues
-  },
-  {
-    currency: '₹',
-    percentage: '22.97',
-    value: '553.06',
-    growth: 'negative',
-    image: BandIcon,
-    title: 'Band Protocol',
-    subtitle: 'BAND',
-    prevValues
-  },
-  {
-    currency: '₹',
-    percentage: '16.31',
-    value: '105.06',
-    growth: 'negative',
-    image: AdaIcon,
-    title: 'Cordano',
-    subtitle: 'ADA',
-    prevValues
-  },
-  {
-    currency: '₹',
-    percentage: '16.58',
-    value: '5.29',
-    growth: 'negative',
-    image: TrxIcon,
-    title: 'TRON',
-    subtitle: 'TRX',
-    prevValues
-  },
-  {
-    currency: '₹',
-    percentage: '0.07',
-    value: '73.00',
-    growth: 'positive',
-    image: UsdtIcon,
-    title: 'Tether',
-    subtitle: 'USDT',
-    prevValues
-  },
-  {
-    currency: '₹',
-    percentage: '21.00',
-    value: '23.39',
-    growth: 'positive',
-    image: DogeIcon,
-    title: 'Dogecoin',
-    subtitle: 'DOGE',
-    prevValues
-  }
+const currencyOptions = [
+  'Market - USD',
+  'Market - EUR',
+  'Market - RUB',
+  'Market - INR',
+  'Market - TRY'
 ]
 
 const Main = () => {
   const [query, setQuery] = useState('')
-  const [filtered, setFiltered] = useState(currencies)
+  const [isSearchActive, setIsSearchActive] = useState(false)
+
+  const { currency, setCurrency, symbol } = useCurrencyContext()
+  const {
+    currencies,
+    isLoading: isCurrenciesLoading,
+    error: currenciesError
+  } = useCurrencies(currency)
+
+  const {
+    filteredCoins: searchResults,
+    isLoading: isSearchLoading,
+    error: searchError,
+    search
+  } = useSearchCoins(currency)
 
   const handleSearch = () => {
-    const lower = query.trim().toLowerCase()
-    if (!lower) {
-      setFiltered(currencies)
+    if (query.trim() === '') {
+      setIsSearchActive(false)
       return
     }
-
-    const matched = currencies.filter(item => item.title.toLowerCase().startsWith(lower))
-
-    setFiltered(matched)
+    search(query)
+    setIsSearchActive(true)
   }
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setQuery(value)
+    if (value.trim() === '') {
+      setIsSearchActive(false)
+    }
+  }
+
+  const handleCurrencyChange = (selected: string | string[]) => {
+    const selectedValue = Array.isArray(selected) ? selected[0] : selected
+    const code = selectedValue.split(' - ')[1]?.toLowerCase()
+    if (code && ['usd', 'eur', 'rub', 'inr', 'try'].includes(code)) {
+      setCurrency(code as any)
+    }
+  }
+
+  const displayCurrencies = isSearchActive ? searchResults : currencies
+  const loading = isSearchActive ? isSearchLoading : isCurrenciesLoading
+  const error = isSearchActive ? searchError : currenciesError
 
   return (
     <MainLayout>
-      <div className={styles.container}>
-        <div className={styles.toolbar}>
+      <Container className={styles.container}>
+        <div className={styles.searchBar}>
           <Input
             placeholder="Search Cryptocurrency"
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={onInputChange}
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleSearch()
+            }}
           />
-          <Button variant="transparent" onClick={handleSearch}>
-            Search
-          </Button>
+          <IconButton icon={Icons.common.search} onClick={handleSearch} />
         </div>
-        <div className={styles.items}>
-          {filtered.map((item, index) => (
-            <Link
-              key={index}
-              to="/currency/$symbol"
-              params={{ symbol: item.subtitle.toLowerCase() }}
-              className={styles.link}
-            >
-              <CurrencyCard {...item} growth={item.growth as GrowthType} />
-            </Link>
-          ))}
+        <div className={styles.toolbar}>
+          <Typography>Coins</Typography>
+          <Dropdown
+            options={currencyOptions}
+            onChange={handleCurrencyChange}
+            value={`Market - ${currency.toUpperCase()}`}
+          />
         </div>
-      </div>
+        {loading ? (
+          <Loader size="large" />
+        ) : error ? (
+          <Typography size="small">Failed to load data</Typography>
+        ) : (
+          <div className={styles.items}>
+            {displayCurrencies.map((item: any, index: Key) => (
+              <Link key={index} to="/currency/$id" params={{ id: item.id }} className={styles.link}>
+                <CurrencyCard
+                  subtitle={item.subtitle || item.symbol?.toUpperCase()}
+                  name={item.title || item.name}
+                  image={item.image || item.thumb}
+                  price={
+                    // Если price уже есть — показываем с символом, иначе fallback на current_price
+                    item.price
+                      ? `${symbol}${item.price}`
+                      : item.current_price
+                      ? `${symbol}${item.current_price.toLocaleString()}`
+                      : 'N/A'
+                  }
+                  {...item}
+                />
+              </Link>
+            ))}
+          </div>
+        )}
+      </Container>
     </MainLayout>
   )
 }

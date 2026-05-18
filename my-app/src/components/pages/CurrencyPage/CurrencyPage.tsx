@@ -1,34 +1,53 @@
-import { useNavigate } from '@tanstack/react-router'
+import { useParams, useNavigate } from '@tanstack/react-router'
 import BackIcon from 'assets/icons/back.svg?react'
-import BtcIcon from 'assets/icons/btc.png'
-import CurrencyCard from 'components/custom/CurrencyCard'
-import { GrowthType } from 'components/custom/CurrencyCard/Currency'
+import PriceChart from 'components/dummies/PriceChart'
+import Button from 'components/ui/Button'
 import IconButton from 'components/ui/IconButton'
+import Loader from 'components/ui/Loader'
+import { useCurrencyContext, currencySymbols } from 'contexts/CurrencyContext'
+import { useState } from 'react'
+import { useCurrency } from 'hooks/useCurrency'
 import styles from './styles.module.scss'
 
-const data = {
-  currency: '₹',
-  percentage: '9.77',
-  value: '2,509.75',
-  growth: 'positive',
-  image: BtcIcon,
-  title: 'Bitcoin',
-  subtitle: 'BTC',
-  prevValues: [
-    { value: '2509.75' },
-    { value: '2495.74' },
-    { value: '2519.75' },
-    { value: '1696.75' },
-    { value: '2114.75' }
-  ]
-}
-
 const CurrencyPage = () => {
+  const [timeRange, setTimeRange] = useState('1')
+  const { id } = useParams({ from: '/currency/$id' })
   const navigate = useNavigate()
 
-  const handleBack = () => {
-    navigate({ to: '/' })
-  }
+  const { currency } = useCurrencyContext()
+
+  const { data, chartData, isLoading, error } = useCurrency(id, timeRange, currency)
+
+  const handleBack = () => navigate({ to: '/' })
+
+  if (isLoading)
+    return (
+      <div className={styles.mainRoot}>
+        <div className={styles.container}>
+          <Loader size="large" />
+        </div>
+      </div>
+    )
+
+  if (error || !data)
+    return (
+      <div className={styles.mainRoot}>
+        <div className={styles.container}>
+          <p>Failed to load data</p>
+        </div>
+      </div>
+    )
+
+  const growth = data.market_data.price_change_percentage_24h >= 0 ? 'positive' : 'negative'
+  const percentage = Math.abs(data.market_data.price_change_percentage_24h).toFixed(2)
+
+  const currencySymbol =
+    currencySymbols[currency.toLowerCase() as keyof typeof currencySymbols] || '$'
+  const value = data.market_data.current_price[currency.toLowerCase()]?.toLocaleString() || '-'
+
+  const image = data.image.large
+  const title = data.name
+  const subtitle = data.symbol.toUpperCase()
 
   return (
     <div className={styles.mainRoot}>
@@ -36,33 +55,47 @@ const CurrencyPage = () => {
         <div className={styles.toolbar}>
           <IconButton variant="transparent" icon={<BackIcon />} onClick={handleBack} />
           <div className={styles.addinfo}>
-            <img src={data.image} alt="" />
+            <img src={image} alt={title} width={40} height={40} />
             <div className={styles.textinfo}>
               <p>
-                {`${data.title}`}
-                <span>{` (${data.subtitle})`}</span>
+                {title}
+                <span>{` (${subtitle})`}</span>
               </p>
             </div>
           </div>
         </div>
+
         <div className={styles.info}>
-          <div className={styles.value}>{`${data.currency}${data.value}`}</div>
-          <div className={data.growth === 'positive' ? styles.positive : styles.negative}>
-            {data.growth === 'positive' ? '+' : '-'}
-            {data.percentage}%
+          <div className={styles.value}>{`${currencySymbol}${value}`}</div>
+          <div className={growth === 'positive' ? styles.positive : styles.negative}>
+            {growth === 'positive' ? '+' : '-'}
+            {percentage}%
           </div>
         </div>
-        <CurrencyCard
-          percentage={data.percentage}
-          currency={data.currency}
-          value={data.value}
-          growth={data.growth as GrowthType}
-          image={data.image}
-          title={data.title}
-          subtitle={data.subtitle}
-          prevValues={data.prevValues}
-          className={styles.card}
-        />
+
+        {data && <PriceChart data={chartData} />}
+
+        <div className={styles.rangeButtons}>
+          {['1', '7', '30', '90', '180', '365'].map(d => (
+            <Button
+              key={d}
+              variant="rounded"
+              className={timeRange === d ? styles.activeButton : ''}
+              onClick={() => setTimeRange(d)}
+            >
+              {
+                {
+                  1: '1H',
+                  7: '24H',
+                  30: '1M',
+                  90: '3M',
+                  180: '6M',
+                  365: '1Y'
+                }[d]
+              }
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   )

@@ -18,7 +18,7 @@ const mainRoute = new Route({
 
 const currencyRoute = new Route({
   getParentRoute: () => rootRoute,
-  path: '/currency/$symbol',
+  path: '/currency/$id',
   component: () => (
     <Suspense>
       <CurrencyPage />

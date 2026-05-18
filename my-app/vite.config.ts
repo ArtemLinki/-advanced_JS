@@ -25,7 +25,8 @@ export default defineConfig({
       { find: 'stores', replacement: `${__dirname}/src/stores` },
       { find: 'styles', replacement: `${__dirname}/src/styles` },
       { find: 'components', replacement: `${__dirname}/src/components` },
-      { find: 'utils', replacement: `${__dirname}/src/utils` }
+      { find: 'utils', replacement: `${__dirname}/src/utils` },
+      { find: 'contexts', replacement: `${__dirname}/src/contexts` }
     ]
   }
 })

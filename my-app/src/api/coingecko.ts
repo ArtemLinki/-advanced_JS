@@ -1,4 +1,3 @@
-// api/coingecko.ts
 const API_KEY = 'CG-te6ri6tZ1fivzczvJ2UqC4Wb'
 const BASE_URL = 'https://api.coingecko.com/api/v3'
 
@@ -6,9 +5,9 @@ const headers = {
   'x-cg-demo-api-key': API_KEY
 }
 
-export const fetchMarketData = async (coinIds: string[]) => {
+export const fetchMarketData = async (coinIds: string[], currency: string = 'usd') => {
   const response = await fetch(
-    `${BASE_URL}/coins/markets?vs_currency=usd&ids=${coinIds.join(',')}`,
+    `${BASE_URL}/coins/markets?vs_currency=${currency}&ids=${coinIds.join(',')}`,
     { headers }
   )
   if (!response.ok) {
@@ -17,17 +16,34 @@ export const fetchMarketData = async (coinIds: string[]) => {
   return response.json()
 }
 
-export const fetchChartData = async (id: string) => {
-  const response = await fetch(`${BASE_URL}/coins/${id}/market_chart?vs_currency=usd&days=7`, {
-    headers
+export const fetchChartData = async (
+  ids: string[],
+  currency: string = 'usd'
+): Promise<Record<string, { value: string }[]>> => {
+  const requests = ids.map(id =>
+    fetch(`${BASE_URL}/coins/${id}/market_chart?vs_currency=${currency}&days=1`, {
+      headers
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`Failed to fetch chart data for ${id}`)
+        return res.json()
+      })
+      .then(data => ({
+        id,
+        values: data.prices.map((entry: [number, number]) => ({
+          value: entry[1].toFixed(2)
+        }))
+      }))
+  )
+
+  const results = await Promise.all(requests)
+  const mapped: Record<string, { value: string }[]> = {}
+
+  results.forEach(({ id, values }) => {
+    mapped[id] = values
   })
-  if (!response.ok) {
-    throw new Error(`Failed to fetch chart data for ${id}`)
-  }
-  const data = await response.json()
-  return data.prices.map(([, value]: [number, number]) => ({
-    value: value.toFixed(2)
-  }))
+
+  return mapped
 }
 
 export const searchCoins = async (query: string) => {
@@ -38,5 +54,5 @@ export const searchCoins = async (query: string) => {
     throw new Error('Failed to fetch search results')
   }
   const data = await response.json()
-  return data.coins // массив найденных монет
+  return data.coins
 }
