@@ -1,0 +1,42 @@
+@use 'styles/mixins' as *;
+
+.checkboxRoot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: rem(25);
+  height: rem(25);
+
+  border: 1px solid #dfe2e4;
+  border-radius: 5px;
+
+  transition: border 0.05s linear;
+
+  &:hover {
+    border: 1px solid #6c757d;
+
+    svg {
+      stroke: #878e94;
+    }
+  }
+
+  &:disabled {
+    border: 1px solid #e7e9ea;
+
+    pointer-events: none;
+
+    svg {
+      stroke: #969da2;
+    }
+  }
+
+  svg {
+    width: rem(14);
+    height: rem(9);
+
+    stroke: #6c757d;
+
+    transition: stroke 0.2s ease;
+  }
+}

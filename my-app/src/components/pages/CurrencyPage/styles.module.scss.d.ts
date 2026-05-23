@@ -1,0 +1,12 @@
+export declare const activeButton: string
+export declare const addinfo: string
+export declare const card: string
+export declare const container: string
+export declare const info: string
+export declare const mainRoot: string
+export declare const negative: string
+export declare const positive: string
+export declare const rangeButtons: string
+export declare const textinfo: string
+export declare const toolbar: string
+export declare const value: string
