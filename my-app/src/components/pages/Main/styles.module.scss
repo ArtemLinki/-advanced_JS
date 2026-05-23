@@ -1,0 +1,32 @@
+@use 'styles/mixins' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: rem(16);
+  align-items: center;
+
+  width: fit-content;
+  margin: 0 auto;
+  padding: rem(16);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8);
+  align-items: center;
+
+  width: 100%;
+}
+
+.link {
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  gap: rem(16);
+
+  width: 100%;
+}

@@ -1,0 +1,30 @@
+@use 'styles/mixins' as *;
+
+.title {
+  font-weight: 700;
+
+  &.large {
+    font-size: rem(40);
+  }
+
+  &.medium {
+    font-size: rem(24);
+  }
+
+  &.small {
+    font-size: rem(16);
+  }
+}
+
+.text {
+  &.large {
+  }
+
+  &.medium {
+  }
+
+  &.small {
+    color: #6c757d;
+    font-size: rem(12);
+  }
+}

@@ -1,0 +1,34 @@
+@use 'styles/mixins' as *;
+
+.inputRoot {
+  width: 100%;
+  height: 100%;
+  max-width: rem(295);
+  max-height: rem(40);
+  padding: rem(12);
+
+  color: #343a40;
+
+  border: 1px solid #dfe2e4;
+  border-radius: rem(4);
+
+  background-color: #fff;
+
+  outline: none;
+
+  &:focus {
+    border: 1px solid #6c757d;
+  }
+
+  &:disabled {
+    border: 1px solid #dfe2e4;
+
+    &::placeholder {
+      color: #6c757d;
+    }
+  }
+
+  &::placeholder {
+    color: #dfe2e4;
+  }
+}

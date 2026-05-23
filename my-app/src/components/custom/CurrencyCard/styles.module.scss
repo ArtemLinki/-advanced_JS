@@ -1,0 +1,44 @@
+@use 'styles/mixins' as *;
+
+.cardRoot {
+  width: 100%;
+  min-width: rem(343);
+}
+
+.cardContent {
+  .value {
+    margin-bottom: rem(5);
+
+    color: #343a40;
+    font-weight: 400;
+    font-size: rem(16);
+  }
+
+  .percentage {
+    font-weight: 500;
+    font-size: rem(10);
+    text-align: right;
+  }
+
+  .positive {
+    color: #21bf73;
+  }
+
+  .negative {
+    color: #d90429;
+  }
+}
+
+.contentWrapper {
+  display: flex;
+  gap: rem(24);
+  justify-content: space-between;
+  align-items: center;
+
+  min-width: rem(150);
+}
+
+.chart {
+  width: rem(60);
+  height: rem(30);
+}

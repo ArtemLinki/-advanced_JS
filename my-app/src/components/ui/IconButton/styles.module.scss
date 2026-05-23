@@ -1,0 +1,43 @@
+@use 'styles/mixins' as *;
+
+.iconButtonRoot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: rem(42);
+  height: rem(42);
+
+  border-radius: 10px;
+
+  background-color: #dfe2e4;
+
+  transition: background 0.1 linear;
+
+  &:disabled {
+    background-color: #f1f2f3;
+
+    pointer-events: none;
+
+    svg {
+      stroke: #c1c3c5;
+    }
+  }
+
+  &:hover {
+    background-color: #eeeff0;
+
+    svg {
+      stroke: #575a5e;
+    }
+  }
+
+  svg {
+    width: rem(15);
+    height: rem(15);
+
+    stroke: #343a40;
+
+    transition: stroke 0.1 linear;
+  }
+}

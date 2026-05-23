@@ -1,0 +1,19 @@
+# Зависимости
+node_modules/
+.pnp
+.pnp.js
+
+# Сборка
+dist/
+build/
+
+# Логи и кэш
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.vite
+
+
+.env
+.env.local
