@@ -1,0 +1,50 @@
+@use 'styles/mixins' as *;
+
+.loaderRoot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loaderIcon {
+  svg path {
+    stroke: var(--grey);
+  }
+}
+
+.sizeL {
+  .loaderIcon {
+    width: rem(60);
+    height: rem(60);
+
+    animation: rotate 1s linear infinite;
+  }
+}
+
+.sizeM {
+  .loaderIcon {
+    width: rem(40);
+    height: rem(40);
+
+    animation: rotate 1s linear infinite;
+  }
+}
+
+.sizeS {
+  .loaderIcon {
+    width: rem(20);
+    height: rem(20);
+
+    animation: rotate 1s linear infinite;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
